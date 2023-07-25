@@ -1,5 +1,6 @@
 using Deployf.Botf;
 using Hangfire;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Telegram.Bot;
 using Telegram.Bot.Types.InputFiles;
@@ -66,14 +67,13 @@ namespace CotikBotik.Controllers
 
             Send();
         }
-        [Action("/stop","Начало работы с ботом")]
+        [Action("/stop","Прекращение работы с ботом")]
         public void Stop()
         {
-            Console.WriteLine(this.ChatId);
+            Console.WriteLine("/stop " + this.ChatId);
 
-            PushL("Привет!");
-            PushL("Этот CotikBotik будет присылать тебе фотографии милых котиков каждый час!");
-            PushL("Вызвав команду /start вы подпишитесь на отправку картинок каждый час!");
+            _dbClient.GetCollection<User>("users").DeleteOneAsync(x => x.chatId == this.ChatId);
+            PushL("Пока!");
 
             Send();
         }
