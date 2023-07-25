@@ -44,13 +44,29 @@
               "target": "Package",
               "version": "[0.17.1, )"
             },
+            "Hangfire": {
+              "target": "Package",
+              "version": "[1.8.3, )"
+            },
+            "Hangfire.Mongo": {
+              "target": "Package",
+              "version": "[1.9.7, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[7.0.0, )"
             },
+            "MongoDB.Driver": {
+              "target": "Package",
+              "version": "[2.20.0, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "Telegrame.Bot": {
+              "target": "Package",
+              "version": "[1.0.5, )"
             }
           },
           "imports": [

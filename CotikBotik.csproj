@@ -8,8 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Deployf.Botf" Version="0.17.1" />
+    <PackageReference Include="Hangfire" Version="1.8.3" />
+    <PackageReference Include="Hangfire.Mongo" Version="1.9.7" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.20.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Telegrame.Bot" Version="1.0.5" />
   </ItemGroup>
 
 </Project>
