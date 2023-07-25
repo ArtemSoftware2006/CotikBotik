@@ -66,6 +66,17 @@ namespace CotikBotik.Controllers
 
             Send();
         }
-        
+        [Action("/stop","Начало работы с ботом")]
+        public void Stop()
+        {
+            Console.WriteLine(this.ChatId);
+
+            PushL("Привет!");
+            PushL("Этот CotikBotik будет присылать тебе фотографии милых котиков каждый час!");
+            PushL("Вызвав команду /start вы подпишитесь на отправку картинок каждый час!");
+
+            Send();
+        }
+
     }
 }
