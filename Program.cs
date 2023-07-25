@@ -19,7 +19,7 @@ namespace CotikBorik
                 var conf_builder = new ConfigurationBuilder();
 
                 conf_builder.SetBasePath(Directory.GetCurrentDirectory());
-                conf_builder.AddJsonFile("appsettings.json");
+                conf_builder.AddJsonFile("security.json");
                 config = conf_builder.Build();
 
                 svc.AddSingleton(new MongoClient(config.GetConnectionString("ConnectStrMongo")).GetDatabase("CotikBotik"));
