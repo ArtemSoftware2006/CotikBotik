@@ -1,3 +1,5 @@
+using Amazon.S3;
+using Amazon.S3.Model;
 using Deployf.Botf;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -12,6 +14,8 @@ namespace CotikBotik
         private readonly IMongoDatabase _dbClient;
         private readonly ITelegramBotClient _client;
         private readonly ILogger<RecurringPhotoJob> _logger;
+        private readonly AmazonS3Config configsS3;
+        private readonly IConfigurationRoot config;
 
         public RecurringPhotoJob( IMongoDatabase dbClient, ITelegramBotClient client, ILogger<RecurringPhotoJob> logger)
         {
@@ -19,6 +23,16 @@ namespace CotikBotik
             _dbClient = dbClient;
             _client = client;
             _logger = logger;
+
+            var conf_builder = new ConfigurationBuilder();
+
+            conf_builder.SetBasePath(Directory.GetCurrentDirectory());
+            conf_builder.AddJsonFile("security.json");
+            config = conf_builder.Build();
+
+            configsS3 = new  AmazonS3Config() {
+                ServiceURL="https://storage.yandexcloud.net"
+            };
         }
 
         public async Task Exec()
@@ -29,28 +43,48 @@ namespace CotikBotik
 
                 if (users != null)
                 {
-                    _logger.LogInformation("Пользователи есть в количестве : " + users.Count);
-                    foreach (var item in users)
+                    using (var client = new AmazonS3Client(config.GetSection("accessKey").Value, config.GetSection("secretKey").Value, configsS3))
                     {
+                        var requestKeys = new ListObjectsV2Request
+                        {
+                            BucketName = config.GetSection("bucketName").Value,
+                            MaxKeys = 10,
+                        };
+
+                        ListObjectsV2Response response = await client.ListObjectsV2Async(requestKeys);
+
                         Random rnd = new Random();
-                        var files = Directory.GetFiles("C://Users//Artem//Desktop//Котики");
-                        var photo = files[rnd.NextInt64(files.Length)].Replace("\\","//");
+                        var keyToPhoto = response.S3Objects[(int)rnd.NextInt64(10L)].Key;
 
-                        _logger.LogInformation(item.chatId + " : " + item.login);
+                        var requestPhoto = new GetObjectRequest();
 
-                        using (FileStream stream = System.IO.File.OpenRead(photo))
+                        var responsePhoto = await client.GetObjectAsync(config.GetSection("bucketName").Value, keyToPhoto);
+
+                        var stream = responsePhoto.ResponseStream;
+                        foreach (var item in users)
                         {
                             InputOnlineFile inputOnlineFile = new InputOnlineFile(stream, "Котитки вперёд!");
                             await ((TelegramBotClient)_client).SendPhotoAsync(item.chatId, inputOnlineFile, caption : "Коитики вперёд!");
+                            
                         }
+
+                        await stream.DisposeAsync();
                     }
                 }   
                 else 
                     _logger.LogWarning("Нет пользователей в бд");
             }
+            catch(AmazonS3Exception ex)
+            {
+                _logger.LogCritical(ex.ErrorCode);
+                _logger.LogCritical(ex.StatusCode.ToString());
+                _logger.LogCritical(ex.Message);
+                _logger.LogCritical(ex.StackTrace);
+            }
             catch(Exception ex)
             {
                 _logger.LogCritical(ex.Message, "Exception in RecurringPhoto");
+                _logger.LogCritical(ex.InnerException, "Exception in RecurringPhoto");
             }
         }
     }

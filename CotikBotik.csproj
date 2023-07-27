@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.201.3" />
     <PackageReference Include="Deployf.Botf" Version="0.17.1" />
     <PackageReference Include="Hangfire" Version="1.8.3" />
     <PackageReference Include="Hangfire.Mongo" Version="1.9.7" />

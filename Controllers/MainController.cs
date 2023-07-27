@@ -15,7 +15,7 @@ namespace CotikBotik.Controllers
         public MainController(IMongoDatabase dbClient)
         {
             this._dbClient = dbClient;
-            // RecurringJob.AddOrUpdate<RecurringPhotoJob>(x => x.Exec(), Cron.MinuteInterval(1));
+            RecurringJob.AddOrUpdate<RecurringPhotoJob>(x => x.Exec(), Cron.MinuteInterval(1));
 
         }
 
@@ -25,7 +25,6 @@ namespace CotikBotik.Controllers
             try
             {
                 PushL("Котики вперёд!");
-                RecurringJob.AddOrUpdate(() => Console.WriteLine(1), Cron.MinuteInterval(1));
 
                 Random rnd = new Random();
                 var files = Directory.GetFiles("C://Users//Artem//Desktop//Котики");

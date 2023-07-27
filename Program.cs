@@ -24,7 +24,7 @@ namespace CotikBorik
 
                 svc.AddSingleton(new MongoClient(config.GetConnectionString("ConnectStrMongo")).GetDatabase("CotikBotik"));
 
-                var mongoConnection = config.GetConnectionString("ConnectStrMongoDocker");
+                var mongoConnection = config.GetConnectionString("ConnectStrMongo");
                 var migrationOptions = new MongoMigrationOptions
                 {
                     MigrationStrategy = new DropMongoMigrationStrategy(),
