@@ -1,0 +1,22 @@
+version: "3.1"
+
+services:
+  app:
+    depends_on:
+       - mongo
+    image: cotikbot
+    ports:
+      - "5067:5067"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development  
+  mongo:
+    image: mongo
+    volumes:
+      - ./mongo-data:/data/db
+    restart: always
+    ports:
+      - 27017:27017
+    
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 1111
