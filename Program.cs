@@ -22,9 +22,9 @@ namespace CotikBorik
                 conf_builder.AddJsonFile("security.json");
                 config = conf_builder.Build();
 
-                svc.AddSingleton(new MongoClient(config.GetConnectionString("ConnectStrMongo")).GetDatabase("CotikBotik"));
+                svc.AddSingleton(new MongoClient(config.GetConnectionString("ConnectStrMongoDocker")).GetDatabase("CotikBotik"));
 
-                var mongoConnection = config.GetConnectionString("ConnectStrMongo");
+                var mongoConnection = config.GetConnectionString("ConnectStrMongoDocker");
                 var migrationOptions = new MongoMigrationOptions
                 {
                     MigrationStrategy = new DropMongoMigrationStrategy(),

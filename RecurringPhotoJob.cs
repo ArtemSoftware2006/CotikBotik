@@ -8,6 +8,9 @@ using Telegram.Bot.Types.InputFiles;
 
 namespace CotikBotik
 {
+    /// <summary>
+    /// Повторяющийся процесс отправки подписчикам фотографий  
+    /// </summary>
     public class RecurringPhotoJob
     {
         readonly MessageBuilder Message;
@@ -16,7 +19,12 @@ namespace CotikBotik
         private readonly ILogger<RecurringPhotoJob> _logger;
         private readonly AmazonS3Config configsS3;
         private readonly IConfigurationRoot config;
-
+        /// <summary>
+        /// Конструктор процесса со всеми используемыми зависимостями
+        /// </summary>
+        /// <param name="dbClient">Клиент связи с базой данных</param>
+        /// <param name="client">Клиент телеграма</param>
+        /// <param name="logger">Логгирование</param>
         public RecurringPhotoJob( IMongoDatabase dbClient, ITelegramBotClient client, ILogger<RecurringPhotoJob> logger)
         {
             Message = new MessageBuilder();
@@ -34,7 +42,10 @@ namespace CotikBotik
                 ServiceURL="https://storage.yandexcloud.net"
             };
         }
-
+        /// <summary>
+        /// Выполняет поиск пользователей по бд и отправляет им фотографии
+        /// </summary>
+        /// <returns></returns>
         public async Task Exec()
         {
             try
@@ -48,13 +59,13 @@ namespace CotikBotik
                         var requestKeys = new ListObjectsV2Request
                         {
                             BucketName = config.GetSection("bucketName").Value,
-                            MaxKeys = 10,
+                            MaxKeys = 12,
                         };
 
                         ListObjectsV2Response response = await client.ListObjectsV2Async(requestKeys);
 
                         Random rnd = new Random();
-                        var keyToPhoto = response.S3Objects[(int)rnd.NextInt64(10L)].Key;
+                        var keyToPhoto = response.S3Objects[(int)rnd.NextInt64(12L)].Key;
 
                         var requestPhoto = new GetObjectRequest();
 
@@ -64,7 +75,7 @@ namespace CotikBotik
                         foreach (var item in users)
                         {
                             InputOnlineFile inputOnlineFile = new InputOnlineFile(stream, "Котитки вперёд!");
-                            await ((TelegramBotClient)_client).SendPhotoAsync(item.chatId, inputOnlineFile, caption : "Коитики вперёд!");
+                            await ((TelegramBotClient)_client).SendPhotoAsync(item.chatId, inputOnlineFile, caption : "Котики вперёд!");
                             
                         }
 

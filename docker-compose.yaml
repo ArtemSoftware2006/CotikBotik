@@ -4,7 +4,7 @@ services:
   app:
     depends_on:
        - mongo
-    image: cotikbot
+    image: artem06/cotikbotik
     ports:
       - "5067:5067"
     environment:

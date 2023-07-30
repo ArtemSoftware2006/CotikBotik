@@ -48,30 +48,32 @@ namespace CotikBotik.Controllers
                 if(user == null)
                 {
                     await _dbClient.GetCollection<User>("users").InsertOneAsync(userNow);
-                }
-                using (var client = new AmazonS3Client(config.GetSection("accessKey").Value, config.GetSection("secretKey").Value, configsS3))
-                {
-                    var requestKeys = new ListObjectsV2Request
+                    using (var client = new AmazonS3Client(config.GetSection("accessKey").Value, config.GetSection("secretKey").Value, configsS3))
                     {
-                        BucketName = config.GetSection("bucketName").Value
-                    };
+                        var requestKeys = new ListObjectsV2Request
+                        {
+                            BucketName = config.GetSection("bucketName").Value
+                        };
 
-                    ListObjectsV2Response response = await client.ListObjectsV2Async(requestKeys);
+                        ListObjectsV2Response response = await client.ListObjectsV2Async(requestKeys);
 
-                    Random rnd = new Random();
-                    var keyToPhoto = response.S3Objects[(int)rnd.NextInt64(10L)].Key;
+                        Random rnd = new Random();
+                        var keyToPhoto = response.S3Objects[(int)rnd.NextInt64(10L)].Key;
 
-                    var requestPhoto = new GetObjectRequest();
+                        var requestPhoto = new GetObjectRequest();
 
-                    var responsePhoto = await client.GetObjectAsync(config.GetSection("bucketName").Value, keyToPhoto);
+                        var responsePhoto = await client.GetObjectAsync(config.GetSection("bucketName").Value, keyToPhoto);
 
-                    var stream = responsePhoto.ResponseStream;
-                    
-                    InputOnlineFile inputOnlineFile = new InputOnlineFile(stream, "Котитки вперёд!");
-                    await ((TelegramBotClient)this.Client).SendPhotoAsync(userNow.chatId, inputOnlineFile, caption : "Коитики вперёд!");
+                        var stream = responsePhoto.ResponseStream;
+                        
+                        InputOnlineFile inputOnlineFile = new InputOnlineFile(stream, "Котитки вперёд!");
+                        await ((TelegramBotClient)this.Client).SendPhotoAsync(userNow.chatId, inputOnlineFile, caption : "Котики вперёд!");
 
-                    await stream.DisposeAsync();
+                        await stream.DisposeAsync();
+                    }
                 }
+                else
+                    await ((TelegramBotClient)this.Client).SendTextMessageAsync(this.ChatId, "Вы уже запускали бота!");
             }
             catch (System.Exception ex)
             {
